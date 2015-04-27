@@ -1,0 +1,166 @@
+#
+## ~/.conkyrc - Default Conky Configuration File
+##
+## I use this config on both my Dell inspiron and my Acer Aspire One
+##
+## I endeavour to make the config as free from bespoke tweaks as possible,
+##  but sometimes it's difficult.  Especially annoying, is the printing of
+##  blank lines in place of the ${if_blah} & ${endif} statements.
+##
+#
+## To fork, or not to fork; that is the question
+background yes
+
+## Performance Settings
+double_buffer yes
+
+## Cache Setting
+imlib_cache_size 200
+text_buffer_size 2048
+
+## Window Settings
+own_window yes
+own_window_hints undecorated,below,sticky,skip_taskbar,skip_pager
+own_window_argb_visual yes
+own_window_transparent yes
+own_window_title bargraph2
+own_window_type desktop
+own_window_argb_value 0
+own_window_class Conky
+
+## Window border
+draw_outline no
+draw_borders no
+draw_shades no
+draw_graph_borders no
+
+## Size and position
+#minimum_size 900 1500
+minimum_size 200 400
+alignment top_right
+gap_x 5
+gap_y 30
+#gap_x 22
+#gap_y 98
+
+## Default Fonts
+use_xft yes
+xftalpha 1
+#xftfont Ubuntu:size=8
+xftfont Monotype:size=8
+override_utf8_locale yes
+#Override_utf8_locale no
+
+### Not Sure Where These Are Best Placed
+update_interval 1.0
+total_run_times 0
+uppercase no
+cpu_avg_samples 2
+no_buffers yes
+use_spacer right
+
+## Colour Settings
+## I'm using colour names from <a href="http://www.w3schools.com/html/html_colornames.asp" title="W3Schools HTML Color Names">W3Schools HTML Color Names</a>
+## I use numbered colours, which allows me to alter the colours en masse,
+##  (a bit like keeping markup & style separate, with HTML & CSS)
+default_color White
+default_shade_color 000000
+default_outline_color 828282
+#color0 D34E18 #aero 96C7FF,ambiance D34E18,dust CD7B2B,elegant 5D7E80,elementary 597CA2,sonar 3C9500
+#color0 LightBlue # Headings 
+#color1 CadetBlue # Variables (on the left)
+#color2 Tomato # Values (on the right)
+#color3 SlateBlue # Graphs and bars
+#color0 Yellow # Headings 
+#color1 SpringGreen # Variables (on the left)
+#color2 Turquoise # Values (on the right)
+#color3 DarkOrange # Graphs and bars
+color0 Turquoise # Headings 
+color1 Thistle # Variables (on the left)
+color2 Khaki # Values (on the right)
+color3 DarkSeaGreen # Graphs and bars
+#
+color4 LimeGreen # GOOD
+color5 Orange # WARNING
+color6 Yellow # HI-VIS ALERT
+color7 Red # CRITICAL
+
+## TEXT OUTPUT
+## I got most of the variables from <a href="http://conky.sourceforge.net/variables.html" title="Conky Obects Documentation">Conky Obects documentation</a>
+test 151
+TEXT
+${color0}${execi 60 cat /etc/issue.net} ${hr}
+${color1} Kernel Arch:${color2}${alignr} ${kernel} ${machine}
+${color1} Uptime:${color2}${alignr} ${uptime}
+# Dell inspiron - Battery is seen as "BAT0"
+#${color1} Battery State:${color2}${alignr} ${battery BAT0} ~${battery_time BAT0}
+#${color3} ${battery_bar BAT0 3}
+# Acer Aspire One - required "sudo apt-get install acpi" and battery is seen as "BAT1"
+# Then you can do "acpi -b" which outputs this sort of thing,
+#  (note that the battery numing/numbering does not reflect the minoca used by conky): -
+# "Battery 0: Discharging, 82%, 04:43:16 remaining"
+#${if_existing /home/chrisp/myself}${color4}HAVE YOU BEEN TOUCHING YOURSELF AGAIN?${endif}
+#
+${color1} Battery State:${color3}\
+${if_match ${battery BAT1} eq "charged"}${color4}${endif}\
+${if_match ${battery BAT1} eq "discharging"}${color5}${endif}\
+${alignr} ${battery BAT1} ~${battery_time BAT1}
+#
+${color3}\
+${if_match ${battery BAT1} eq discharging}\
+${if_match ${battery_percent BAT1} <= 75}${color5}${endif}\
+${if_match ${battery_percent BAT1} <= 25}${color6}${endif}\
+${if_match ${battery_percent BAT1} <= 10}${color7}${endif}\
+${endif}\
+${battery_bar BAT1 3}
+#
+${color1} Load Average:${color2}${alignr} ${loadavg}
+${color3} ${loadgraph 10 -l}
+${color0}${execi 15 whoami}@$nodename ${hr}
+${color1} Internet (WAN) IP:${color2}${alignr} ${execi 300 wget -q -O - http://wtfismyip.com/text | tail -1}
+${if_existing /proc/net/route eth0}${color1} eth0 ▲:${color3}${upspeedgraph eth0 10,130 -l}${color2}${alignr} ${upspeed eth0}
+${color1} eth0 ▼:${color3}${downspeedgraph eth0 10,130 -l}${color2}${alignr} ${downspeed eth0}
+${color1} Ethernet IP:${color2}${alignr} ${addr eth0}${endif}
+#${if_existing /proc/net/route eth1}${color1} eth1 ▲:${color3}${upspeedgraph eth1 10,130 -l}${color2}${alignr} ${upspeed eth1}
+#${color1} eth1 ▼:${color3}${downspeedgraph eth1 10,130 -l}${color2}${alignr} ${downspeed eth1}
+#${color1} Ethernet IP:${color2}${alignr} ${addr eth1}${endif}
+${if_existing /proc/net/route wlan0}${color1} wlan0 ▲:${color3}${upspeedgraph wlan0 10,130 -l}${color2}${alignr} ${upspeed wlan0}
+${color1} wlan0 ▼:${color3}${downspeedgraph wlan0 10,130 -l}${color2}${alignr} ${downspeed wlan0}
+${color1} WiFi IP:${color2}${alignr} ${addr wlan0}
+${color1} SSID (BitRate):${color2}${alignr} ${wireless_essid wlan0} (${wireless_bitrate wlan0})
+${color1} Link Quality:${color3} ${wireless_link_bar 3,140 wlan0}${color2}${alignr} ${wireless_link_qual_perc wlan0}%${endif}
+#${if_existing /proc/net/route wlan1}${color1} wlan1 ▲:${color3}${upspeedgraph wlan1 10,130 -l}${color2}${alignr} ${upspeed wlan1}
+#${color1} wlan1 ▼:${color3}${downspeedgraph wlan1 10,130 -l}${color2}${alignr} ${downspeed wlan1}
+#${color1} WiFi IP:${color2}${alignr} ${addr wlan1}
+#${color1} SSID (BitRate):${color2}${alignr} ${wireless_essid wlan1} (${wireless_bitrate wlan1})
+#${color1} Link Quality:${color3} ${wireless_link_bar 3,140 wlan1}${color2}${alignr} ${wireless_link_qual_perc wlan1}%${endif}
+${if_existing /proc/net/route wlan2}${color1} wlan2 ▲:${color3}${upspeedgraph wlan2 10,130 -l}${color2}${alignr} ${upspeed wlan2}
+${color1} wlan2 ▼:${color3}${downspeedgraph wlan2 10,130 -l}${color2}${alignr} ${downspeed wlan2}
+${color1} WiFi IP:${color2}${alignr} ${addr wlan2}
+${color1} SSID (BitRate):${color2}${alignr} ${wireless_essid wlan2} (${wireless_bitrate wlan2})
+${color1} Link Quality:${color3} ${wireless_link_bar 3,140 wlan2}${color2}${alignr} ${wireless_link_qual_perc wlan2}%${endif}
+# Dell inspiron
+#${color0}Intel Core i5-3210M 2.50GHz ${hr}
+# Acer Aspire One
+${color0}Intel Atom N270 1.60GHz ${hr}
+${color1} Current CPU Freq:${color2}${alignr} ${freq_g}GHz
+${color1} Temperature:${color2}${alignr} ${acpitemp}°C
+${color1} Processes:${color2}${alignr} ${processes}
+${color1} Running:${color2}${alignr} ${running_processes}
+${color1} CPU0:${color3} ${cpubar cpu0 3,170 -l}${color2}${alignr} ${cpu cpu0}%
+${color1} CPU1:${color3} ${cpubar cpu1 3,170 -l}${color2}${alignr} ${cpu cpu1}%
+# Acer Aspire One - has only 2 CPU cores
+#${color1} CPU2:${color3} ${cpubar cpu2 3,170 -l}${color2}${alignr} ${cpu cpu2}%
+#${color1} CPU3:${color3} ${cpubar cpu3 3,170 -l}${color2}${alignr} ${cpu cpu3}%
+${color0}Memory Used/Total % ${hr}
+${color1} RAM:${color3} ${membar 3,70} ${color2}${alignr} ${mem}/${memmax} ${memperc}%
+${color1} Swap:${color3} ${swapbar 3,70} ${color2}${alignr} ${swap}/${swapmax} ${swapperc}%
+${color0}Disk Used/Total % ${hr}
+${color1} /${color3} ${fs_bar 3,100 /}${color2}${alignr} ${fs_used /}/${fs_size /} ${fs_used_perc /}%
+# Acer Aspire One - Short on storage space, so has more exotic partitioning (separate /boot & /home/chrisp)
+${color1} /boot${color3} ${fs_bar 3,100 /boot}${color2}${alignr} ${fs_used /boot}/${fs_size /boot} ${fs_used_perc /boot}%
+${color1} ~chrisp${color3} ${fs_bar 3,100 /home/chrisp}${color2}${alignr} ${fs_used /home/chrisp}/${fs_size /home/chrisp} ${fs_used_perc /home/chrisp}%
+${color0}Other Stuph ${hr}
+${color1} Unread Mails:${color2}${alignr} ${execi 60 ~/.conky/imap}
+#${color1} Weather:${color2}${alignr} ${execi 300 ~/.conky/weather}
+${color1} ...
